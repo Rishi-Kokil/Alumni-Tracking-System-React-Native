@@ -52,4 +52,4 @@ The Alumni Tracking System serves as a platform for fostering connections betwee
 
 ## Feedback
 
-We welcome your feedback! If you have any suggestions, ideas, or issues, please feel free to [open an issue](https://github.com/yourusername/alumni-tracking-system/issues) or [contact us](mailto:rishikokil@email.com). We appreciate your support in making the Alumni Tracking System better for everyone.
+We welcome your feedback! If you have any suggestions, ideas, or issues, please feel free to [open an issue](https://github.com/Rishi-Kokil/Alumni-Tracking-System-React-Native/issues) or [contact us](mailto:rishikokil@email.com). We appreciate your support in making the Alumni Tracking System better for everyone.
