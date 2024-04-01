@@ -7,8 +7,15 @@ const style = StyleSheet.create({
     container: {
         flexDirection: "row",
         justifyContent: "space-between",
-        padding : 10,
-    }
+        backgroundColor : "white",
+        paddingHorizontal : 20,
+        paddingVertical : 10,
+    },
+    iconsContainer: {
+        width : '20%',
+        flexDirection: "row",
+        justifyContent: "space-between",
+    },
 })
 
 const HeaderComponent = () => {
@@ -17,9 +24,20 @@ const HeaderComponent = () => {
         <View style={style.container}>
             <Text
                 style={{ fontSize: 16 }}
-            >Alumni Tracking System</Text>
-            <Ionicons name="chatbox-ellipses" size={28
-            } color="black" onPress={() => { navigation.navigate("Chat") }} />
+            >Alumni Tracking System (Rishi D12C 38)</Text>
+            <View
+                style = {style.iconsContainer}
+            >
+                <Ionicons
+                    name="notifications"
+                    size={24}
+                    color="black" />
+                <Ionicons
+                    name="chatbox-ellipses"
+                    size={28}
+                    color="black"
+                    onPress={() => { navigation.navigate("Chat") }} />
+            </View>
         </View>
     )
 }

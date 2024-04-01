@@ -4,17 +4,17 @@ import { SafeAreaView } from "react-native-safe-area-context";
 import ProfileHeader from '../Components/ProfileHeader';
 import { fetchUserProfile } from '../Firebase/FireStoreDB';
 import { useNavigation } from '@react-navigation/native';
+import PostListComponent from '../Components/PostListComponent';
 
 
 const styles = StyleSheet.create({
-  //Section in the Page
   detailsSection: {
-    height: "50%",
     paddingHorizontal: 15,
-    paddingVertical: 10,
+    paddingVertical: 20,
     flexDirection: 'row',
     alignItems: 'center',
-    gap: 20,
+    borderBottomWidth: 0.5,
+    borderBottomColor: 'grey',
     justifyContent: 'space-around',
   },
   countSection: {
@@ -23,6 +23,7 @@ const styles = StyleSheet.create({
   },
   detailsSubSection: {
     flex: 1,
+    gap: 5,
     justifyContent: 'center',
     alignItems: 'center',
   },
@@ -97,12 +98,13 @@ const Profile = () => {
     }
 
     fetchData();
+
   }, [])
 
   return (
     <SafeAreaView>
       <ProfileHeader title={"userName"} style={styles.header} />
-      { !data && <ActivityIndicator />}
+      {!data && <ActivityIndicator />}
       {
         data
         && (
@@ -142,29 +144,17 @@ const Profile = () => {
                 >
                   <Text style={styles.buttonText}>Edit</Text>
                 </TouchableOpacity>
-                <TouchableOpacity
-                  style={styles.editProfileButton}
-                  onPress={
-                    ()=>{
-                      navigation.navigate("Map");
-                    }
-                  }
-                >
-                  <Text style={styles.buttonText}>Map Location</Text>
-                </TouchableOpacity>
-                
 
               </View>
             </View>
-            
-            <View style={styles.gallery}>
-              <Text style={styles.posts}>Posts</Text>
-            </View>
-            
+
+            {
+              data && <PostListComponent posts={data.Posts} />
+            }
+
           </>
         )
       }
-
     </SafeAreaView>
   );
 }

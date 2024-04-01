@@ -8,16 +8,16 @@ const MapScreen = () => {
       <MapView
         style={styles.map}
         initialRegion={{
-          latitude: 37.78825,
-          longitude: -122.4324,
+          latitude: 18.997516,
+          longitude: 73.109426,
           latitudeDelta: 0.0922,
           longitudeDelta: 0.0421,
         }}
       >
         <Marker
-          coordinate={{ latitude: 37.78825, longitude: -122.4324 }}
-          title="Marker Title"
-          description="Marker Description"
+          coordinate={{ latitude: 18.997516, longitude: 73.109426 }}
+          title="Rishi Kokil"
+          description="Your Current Location"
         />
       </MapView>
     </View>

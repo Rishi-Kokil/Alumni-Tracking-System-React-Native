@@ -1,13 +1,7 @@
 import React, { useState, useEffect } from 'react';
-import { View, StyleSheet, TouchableOpacity } from 'react-native';
-import { useNavigation, useFocusEffect } from '@react-navigation/native';
-import { MaterialCommunityIcons } from '@expo/vector-icons';
+import { View, StyleSheet, TouchableOpacity, Text } from 'react-native';
+import { useNavigation } from '@react-navigation/native';
 import { FontAwesome } from '@expo/vector-icons';
-{/* <FontAwesome name="user-circle-o" size={24} color="black" /> */}
-{/* <FontAwesome name="briefcase" size={24} color="black" /> */}
-{/* <FontAwesome name="plus-square-o" size={24} color="black" /> */}
-{/* <FontAwesome name="search" size={24} color="black" /> */}
-{/* <FontAwesome name="home" size={24} color="black" /> */}
 
 const BottomNav = () => {
     const navigation = useNavigation();
@@ -23,28 +17,46 @@ const BottomNav = () => {
         },
         button: {
             paddingHorizontal: 15,
-            paddingVertical : 5,
-            color: "#86888A",
+            paddingVertical: 5,
+            flex: 1,
+            alignItems: 'center',
+            gap : 3,
         },
         SelectedButton: {
             paddingHorizontal: 15,
-            paddingVertical : 5,
-            color: "#000000",
-            borderTopWidth : 2,
+            paddingVertical: 5,
+            borderTopWidth: 2,
+            flex: 1,
+            alignItems: 'center',
+            gap : 3,
         },
-    
+        icon: {
+            color: "#86888A",
+        },
+        SelectedIcon: {
+            color: "#000000",
+        },
+        text: {
+            fontSize: 10,
+            color: "#86888A",
+        },
+        selectedText: {
+            fontSize: 10,
+            color: "#000000",
+        }
+
     });
 
-   
+
     const routes = [
-        { name: 'Home', icon: 'home' },
-        { name: 'Search', icon: 'search' },
-        { name: 'Post', icon: 'plus-square-o' },
-        { name: 'Job', icon: 'briefcase' },
-        { name: 'Profile', icon: 'user-circle-o' },
+        { name: 'Home', icon: 'home', text: "Home" },
+        { name: 'Search', icon: 'search', text: "Search" },
+        { name: 'Post', icon: 'plus-square-o', text: "Post" },
+        { name: 'Job', icon: 'briefcase', text: "Job" },
+        { name: 'Profile', icon: 'user-circle-o', text: "Profile" },
     ];
 
-    const invisibleRoutes = ["Welcome", "Login", "Signup", "Chat"];
+    const invisibleRoutes = ["Welcome", "Login", "Signup", "Chat", "Map", "Settings", "Qr"];
 
     useEffect(() => {
 
@@ -84,15 +96,18 @@ const BottomNav = () => {
                 <TouchableOpacity
                     key={index}
                     onPress={() => onPressHandler(route.name)}
-                    style={styles.button}
+                    style={selected === index ? styles.SelectedButton : styles.button}
                     activeOpacity={0.5} // Set the opacity of the touchable effect
                 >
-            
-                    <FontAwesome 
+                    <FontAwesome
                         name={route.icon}
                         size={27}
-                        style={selected === index ? styles.SelectedButton : styles.button}
+
+                        style={selected === index ? styles.SelectedIcon : styles.icon}
                     />
+                    <Text
+                        style={selected === index ? styles.selectedText : styles.text}
+                    >{route.text}</Text>
                 </TouchableOpacity>
             ))}
         </View>

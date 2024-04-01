@@ -12,25 +12,24 @@ import {
     arrayUnion
 } from "firebase/firestore";
 
-
 import AsyncStorage from '@react-native-async-storage/async-storage';
+import { getStorage, ref, uploadBytes, getDownloadURL } from "firebase/storage";
 import { createUserWithEmailAndPassword, signInWithEmailAndPassword } from "firebase/auth";
-import { auth } from "./FirebaseConfig"
+import { auth, app } from "./FirebaseConfig"
 
 const db = getFirestore(); // Get reference to Firestore instance
+const storage = getStorage(app);
 
 const signUpUser = async (email, password, fullname, age, role) => {
     try {
         const userCredential = await createUserWithEmailAndPassword(auth, email, password);
         const userId = userCredential.user.uid;
-        console.log(userId);
         await AsyncStorage.setItem('userId', userId);
-
         await storeUserProfile(fullname, email, age, userId, role);
 
     } catch (error) {
         return error;
-    }
+    } 
 }
 
 const logInUser = async (email, password) => {
@@ -84,37 +83,36 @@ const storeUserProfile = async (fullname, email, age, uId, role) => {
     }
 };
 
-// Function to fetch user data from Firestore
 const fetchUserProfile = async () => {
     try {
         // Retrieve the user ID from AsyncStorage
         const userId = await AsyncStorage.getItem('profileId');
-        console.log("Auth is :- " + auth);
-        console.log(userId);
-        if (userId) {
-            // Get a reference to the user document in Firestore
-            const userDocRef = doc(db, "users", userId);
-
-            // Fetch the user document from Firestore
-            const userDocSnapshot = await getDoc(userDocRef);
-
-            // Check if the document exists
-            if (userDocSnapshot.exists()) {
-                // Extract user data from the document snapshot
-                const userData = userDocSnapshot.data();
-                console.log('User Data:', userData);
-                return userData; // Return the user data
-            } else {
-                console.log('User document does not exist');
-                return null;
-            }
-        } else {
+        if (!userId) {
             console.log('User ID not found in AsyncStorage');
             return null;
         }
+
+        // Get a reference to the user document in Firestore
+        const userDocRef = doc(db, 'users', userId);
+        const userDocSnapshot = await getDoc(userDocRef);
+
+        if (!userDocSnapshot.exists()) {
+            console.log('User document does not exist');
+            return null;
+        }
+
+        // Extract user data from the document snapshot
+        const userData = userDocSnapshot.data();
+
+        // Fetch post details for each post ID in the user's 'Posts' array
+        const postsWithDetails = await Promise.all(userData.Posts.map(fetchPostById));
+        // Add post details to the user data
+        userData.Posts = postsWithDetails;
+
+        return userData; // Return the user data with post details
     } catch (error) {
         console.error('Error fetching user data:', error);
-        return error.message;
+        return new Error(error.message);
     }
 };
 
@@ -166,7 +164,6 @@ const fetchAllJobs = async () => {
 
         const jobs = [];
         querySnapshot.forEach(doc => {
-            // Extract the data from each document
             const jobData = doc.data();
             jobs.push({ id: doc.id, ...jobData });
         });
@@ -189,4 +186,93 @@ const searchUsers = async (search) => {
 };
 
 
-export { signUpUser, fetchUserProfile, logInUser, addJobToFirestore, fetchAllJobs, searchUsers };
+const createPost = async (title, subheading, description, imageUri) => {
+    try {
+        // Retrieve the user's profile ID from AsyncStorage
+        const profileId = await AsyncStorage.getItem('profileId');
+
+        if (!profileId) {
+            throw new Error('Profile ID not found in AsyncStorage');
+        }
+
+        // Get a reference to the "Posts" collection
+        const postsCollectionRef = collection(db, 'Posts');
+
+        // Calculate the current date and time
+        const timestamp = serverTimestamp();
+
+        // Upload the image to Firebase Storage
+        const imageFileName = `post_${Date.now()}`;
+        const storageRef = ref(storage, imageFileName);
+        
+        // Determine the content type of the image based on its file extension
+        const contentType = imageUri.endsWith('.png') ? 'image/png' : 'image/jpeg';
+        
+        // Convert the imageUri to bytes
+        const response = await fetch(imageUri);
+        const blob = await response.blob();
+
+        // Upload the image bytes to Firebase Storage with the determined content type
+        await uploadBytes(storageRef, blob, { contentType });
+
+        // Get the download URL of the uploaded image
+        const imageUrl = await getDownloadURL(storageRef);
+
+        // Add a new document to the "Posts" collection with the provided post details
+        const docRef = await addDoc(postsCollectionRef, {
+            title: title,
+            subheading: subheading,
+            description: description,
+            imageUrl: imageUrl, // Store the download URL of the image
+            createdAt: timestamp,
+        });
+
+        console.log("Post added with ID: ", docRef.id);
+
+        // Get a reference to the user document in the "users" collection
+        const userDocRef = doc(db, "users", profileId);
+
+        // Update the user's profile with the newly created post document ID
+        await updateDoc(userDocRef, {
+            Posts: arrayUnion(docRef.id) // Add the new post document ID to the "Posts" array field in the user's profile
+        });
+
+        console.log("Post ID added to user's profile");
+
+        return docRef.id; // Return the ID of the newly added post document
+    } catch (error) {
+        console.error("Error creating post: ", error);
+        throw error; // Throw the error for handling in the calling function
+    }
+};
+
+const fetchPostById = async (postId) => {
+    try {
+        // Get a reference to the post document in Firestore
+        const postDocRef = doc(db, 'Posts', postId);
+        
+        // Fetch the post document from Firestore
+        const postDocSnapshot = await getDoc(postDocRef);
+
+        // Check if the document exists
+        if (postDocSnapshot.exists()) {
+            // Extract post data from the document snapshot
+            const postData = postDocSnapshot.data();
+            
+            // Get the download URL of the image associated with the post
+            const imageUrl = await getDownloadURL(ref(storage, postData.imageUrl));
+            
+            // Return the post data along with the image URL
+            return {...postData, imageUrl };
+        } else {
+            console.log('Post document does not exist');
+            return null;
+        }
+    } catch (error) {
+        console.error('Error fetching post data:', error);
+        throw error;
+    }
+};
+
+
+export { signUpUser, fetchUserProfile, logInUser, addJobToFirestore, fetchAllJobs, searchUsers, createPost, fetchPostById };

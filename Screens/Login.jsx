@@ -2,6 +2,7 @@ import React, { useEffect, useState, useRef } from 'react';
 import { View, Text, TextInput, ActivityIndicator, Animated, TouchableOpacity, StyleSheet } from 'react-native';
 import { logInUser } from '../Firebase/FireStoreDB';
 import CheckBox from 'react-native-check-box'
+import { useTheme } from '@react-navigation/native';
 
 const Login = ({ navigation }) => {
     const [username, setUsername] = useState('');
@@ -9,12 +10,9 @@ const Login = ({ navigation }) => {
     const [error, setError] = useState(null);
     const [loading, setLoading] = useState(false);
     const [isChecked, setIsChecked] = useState(false);
+    const theme = useTheme();
 
     const translateY = useRef(new Animated.Value(-300)).current;
-
-    const handleCheckBoxToggle = () => {
-        setIsChecked(!isChecked);
-    };
 
     const handleLogin = async () => {
         if (username === "" || password === "" ) {
@@ -47,7 +45,7 @@ const Login = ({ navigation }) => {
     const styles = StyleSheet.create({
         button: {
             padding: 10,
-            backgroundColor: '#272A2B',
+            backgroundColor : "#262626",
             marginVertical: 20,
             borderRadius: 10,
             width: 100
@@ -70,13 +68,13 @@ const Login = ({ navigation }) => {
             flex: 1,
             justifyContent: 'center',
             alignItems: 'center',
-            gap: 10
+            gap: 10,
         },
         headingText: {
             fontSize: 32,
             width: '80%',
             marginBottom: 40,
-            textAlign: "center"
+            textAlign: "center",
         },
         subHeadingText: {
             fontSize: 16,

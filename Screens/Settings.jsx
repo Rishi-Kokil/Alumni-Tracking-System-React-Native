@@ -14,46 +14,55 @@ const Settings = ({ navigation }) => {
     navigation.navigate('Login'); // Navigate to the login screen after logout
   };
 
-  const handleTheme = ()=>{
+  const handleTheme = () => {
     console.log("Theme Clicked");
   }
 
+  const handleLocation = () => {
+    navigation.navigate("Map")
+  }
 
   const buttons = [
     {
-      id : 1,
-      title : "Theme",
-      handler : handleTheme,
-      icon : "theme-light-dark"
+      id: 1,
+      title: "Theme",
+      handler: handleTheme,
+      icon: "theme-light-dark"
     },
     {
-      id : 2,
-      title : "Log Out",
-      handler : handleLogout,
-      icon : "logout"
+      id: 2,
+      title: "Location",
+      handler: handleLocation,
+      icon: "map-marker"
+    },
+    {
+      id: 3,
+      title: "Log Out",
+      handler: handleLogout,
+      icon: "logout"
     },
   ]
 
   return (
     <View style={styles.container}>
-        {
-          buttons.map(
-            (item) => (
-              <TouchableOpacity 
-                key={item.id}
-                style={styles.button}
-                onPress={item.handler} 
-              >
-                <MaterialCommunityIcons 
-                  name={item.icon} 
-                  size={24} 
-                  color="white"
-                />
-                 <Text style={styles.buttonText}>{item.title}</Text>
-              </TouchableOpacity>
-            )
+      {
+        buttons.map(
+          (item) => (
+            <TouchableOpacity
+              key={item.id}
+              style={styles.button}
+              onPress={item.handler}
+            >
+              <MaterialCommunityIcons
+                name={item.icon}
+                size={24}
+                color="white"
+              />
+              <Text style={styles.buttonText}>{item.title}</Text>
+            </TouchableOpacity>
           )
-        }
+        )
+      }
     </View>
   );
 };
@@ -63,21 +72,21 @@ const styles = StyleSheet.create({
     flex: 1,
     justifyContent: 'flex-start',
     alignItems: 'center',
-    gap : 5,
-    paddingVertical : 20,
+    gap: 5,
+    paddingVertical: 20,
   },
-  button : {
-    width : '95%',
-    backgroundColor : "#272A2B",
-    borderRadius : 10,
-    height : 50,
-    flexDirection : "row",
-    gap : 30,
-    alignItems : 'center',
-    paddingLeft : 30,
+  button: {
+    width: '95%',
+    backgroundColor: "#272A2B",
+    borderRadius: 10,
+    height: 50,
+    flexDirection: "row",
+    gap: 30,
+    alignItems: 'center',
+    paddingLeft: 30,
   },
-  buttonText : {
-    color : "white"
+  buttonText: {
+    color: "white"
   }
 });
 
